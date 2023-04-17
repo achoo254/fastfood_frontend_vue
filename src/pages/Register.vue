@@ -1,10 +1,38 @@
-<script setup lang="ts">
-import DarkModeSwitcher from "../components/DarkModeSwitcher";
-import MainColorSwitcher from "../components/MainColorSwitcher";
-import logoUrl from "../assets/images/logo.svg";
-import illustrationUrl from "../assets/images/illustration.svg";
-import { FormInput, FormCheck } from "../base-components/Form";
-import Button from "../base-components/Button";
+<script setup lang='ts'>
+  import DarkModeSwitcher from '../components/DarkModeSwitcher';
+  import MainColorSwitcher from '../components/MainColorSwitcher';
+  import logoUrl from '../assets/images/logo.svg';
+  import illustrationUrl from '../assets/images/illustration.svg';
+  import { FormInput } from '../base-components/Form';
+  import Button from '../base-components/Button';
+  import { reactive } from 'vue';
+  import { EnumRole } from '../models/enum/EnumRole';
+  import NotificationToastify from '../base-components/Custom/NotificationCustom/Main.vue';
+  import { IAccount } from '../models/interface/IAccount';
+  import { tryCallRequest } from '../utils/my-function';
+  import router from '../router';
+  import { AccountStore } from '../stores/account-store';
+
+  const accountStore = AccountStore();
+  const formData = reactive({
+    username: '',
+    fullname: '',
+    role: EnumRole.NHAN_VIEN,
+    password: '',
+  });
+
+  async function actionRegister() {
+    if (formData.username && formData.password) {
+      //init request
+      const request = { username: formData.username, password: formData.password, fullname: formData.fullname, role: formData.role } as IAccount;
+      //call request
+      await tryCallRequest(async () => {
+        await accountStore.actionRegister(request);
+        //redirect
+        await router.push('/');
+      });
+    }
+  }
 </script>
 
 <template>
@@ -17,123 +45,88 @@ import Button from "../base-components/Button";
   >
     <DarkModeSwitcher />
     <MainColorSwitcher />
-    <div class="container relative z-10 sm:px-10">
-      <div class="block grid-cols-2 gap-4 xl:grid">
+    <div class='container relative z-10 sm:px-10'>
+      <div class='block grid-cols-2 gap-4 xl:grid'>
         <!-- BEGIN: Register Info -->
-        <div class="flex-col hidden min-h-screen xl:flex">
-          <a href="" class="flex items-center pt-5 -intro-x">
+        <div class='flex-col hidden min-h-screen xl:flex'>
+          <a href='' class='flex items-center pt-5 -intro-x'>
             <img
-              alt="Midone Tailwind HTML Admin Template"
-              class="w-6"
-              :src="logoUrl"
+              alt='Midone Tailwind HTML Admin Template'
+              class='w-6'
+              :src='logoUrl'
             />
-            <span class="ml-3 text-lg text-white"> Rubick </span>
+            <span class='ml-3 text-lg text-white'> Gà Rán PyFC Việt Nam </span>
           </a>
-          <div class="my-auto">
+          <div class='my-auto'>
             <img
-              alt="Midone Tailwind HTML Admin Template"
-              class="w-1/2 -mt-16 -intro-x"
-              :src="illustrationUrl"
+              alt='Midone Tailwind HTML Admin Template'
+              class='w-1/2 -mt-16 -intro-x'
+              :src='illustrationUrl'
             />
             <div
-              class="mt-10 text-4xl font-medium leading-tight text-white -intro-x"
+              class='mt-10 text-4xl font-medium leading-tight text-white -intro-x'
             >
-              A few more clicks to <br />
-              sign up to your account.
+              Một vài cú nhấp chuột nữa để <br />
+              đăng ký tài khoản của bạn.
             </div>
             <div
-              class="mt-5 text-lg text-white -intro-x text-opacity-70 dark:text-slate-400"
+              class='mt-5 text-lg text-white -intro-x text-opacity-70 dark:text-slate-400'
             >
-              Manage all your e-commerce accounts in one place
+              Quản lý tất cả các tài khoản của bạn ở một nơi
             </div>
           </div>
         </div>
         <!-- END: Register Info -->
         <!-- BEGIN: Register Form -->
-        <div class="flex h-screen py-5 my-10 xl:h-auto xl:py-0 xl:my-0">
+        <div class='flex h-screen py-5 my-10 xl:h-auto xl:py-0 xl:my-0'>
           <div
-            class="w-full px-5 py-8 mx-auto my-auto bg-white rounded-md shadow-md xl:ml-20 dark:bg-darkmode-600 xl:bg-transparent sm:px-8 xl:p-0 xl:shadow-none sm:w-3/4 lg:w-2/4 xl:w-auto"
+            class='w-full px-5 py-8 mx-auto my-auto bg-white rounded-md shadow-md xl:ml-20 dark:bg-darkmode-600 xl:bg-transparent sm:px-8 xl:p-0 xl:shadow-none sm:w-3/4 lg:w-2/4 xl:w-auto'
           >
             <h2
-              class="text-2xl font-bold text-center intro-x xl:text-3xl xl:text-left"
+              class='text-2xl font-bold text-center intro-x xl:text-3xl xl:text-left'
             >
-              Sign Up
+              Đăng ký
             </h2>
             <div
-              class="mt-2 text-center intro-x text-slate-400 dark:text-slate-400 xl:hidden"
+              class='mt-2 text-center intro-x text-slate-400 dark:text-slate-400 xl:hidden'
             >
-              A few more clicks to sign in to your account. Manage all your
-              e-commerce accounts in one place
+              Một vài cú nhấp chuột nữa để đăng ký vào tài khoản của bạn. Quản lý tất cả các tài khoản của bạn ở một
+              nơi
             </div>
-            <div class="mt-8 intro-x">
+            <div class='mt-8 intro-x'>
               <FormInput
-                type="text"
-                class="block px-4 py-3 intro-x login__input min-w-full xl:min-w-[350px]"
-                placeholder="First Name"
+                type='text'
+                class='block px-4 py-3 intro-x login__input min-w-full xl:min-w-[350px]'
+                placeholder='Username'
+                v-model='formData.username'
               />
               <FormInput
-                type="text"
-                class="block px-4 py-3 mt-4 intro-x login__input min-w-full xl:min-w-[350px]"
-                placeholder="Last Name"
+                type='text'
+                class='block px-4 py-3 mt-4 intro-x login__input min-w-full xl:min-w-[350px]'
+                placeholder='Fullname'
+                v-model='formData.fullname'
               />
               <FormInput
-                type="text"
-                class="block px-4 py-3 mt-4 intro-x login__input min-w-full xl:min-w-[350px]"
-                placeholder="Email"
-              />
-              <FormInput
-                type="text"
-                class="block px-4 py-3 mt-4 intro-x login__input min-w-full xl:min-w-[350px]"
-                placeholder="Password"
-              />
-              <div class="grid w-full h-1 grid-cols-12 gap-4 mt-3 intro-x">
-                <div class="h-full col-span-3 rounded bg-success"></div>
-                <div class="h-full col-span-3 rounded bg-success"></div>
-                <div class="h-full col-span-3 rounded bg-success"></div>
-                <div
-                  class="h-full col-span-3 rounded bg-slate-100 dark:bg-darkmode-800"
-                ></div>
-              </div>
-              <a
-                href=""
-                class="block mt-2 text-xs intro-x text-slate-500 sm:text-sm"
-              >
-                What is a secure password?
-              </a>
-              <FormInput
-                type="text"
-                class="block px-4 py-3 mt-4 intro-x login__input min-w-full xl:min-w-[350px]"
-                placeholder="Password Confirmation"
+                type='password'
+                class='block px-4 py-3 mt-4 intro-x login__input min-w-full xl:min-w-[350px]'
+                placeholder='Password'
+                v-model='formData.password'
               />
             </div>
-            <div
-              class="flex items-center mt-4 text-xs intro-x text-slate-600 dark:text-slate-500 sm:text-sm"
-            >
-              <FormCheck.Input
-                id="remember-me"
-                type="checkbox"
-                class="mr-2 border"
-              />
-              <label class="cursor-pointer select-none" htmlFor="remember-me">
-                I agree to the Envato
-              </label>
-              <a class="ml-1 text-primary dark:text-slate-200" href="">
-                Privacy Policy
-              </a>
-              .
-            </div>
-            <div class="mt-5 text-center intro-x xl:mt-8 xl:text-left">
+            <div class='mt-5 text-center intro-x xl:mt-8 xl:text-left'>
               <Button
-                variant="primary"
-                class="w-full px-4 py-3 align-top xl:w-32 xl:mr-3"
+                variant='primary'
+                class='w-full px-4 py-3 align-top xl:w-32 xl:mr-3'
+                @click='actionRegister'
               >
-                Register
+                Đăng ký
               </Button>
               <Button
-                variant="outline-secondary"
-                class="w-full px-4 py-3 mt-3 align-top xl:w-32 xl:mt-0"
+                variant='outline-secondary'
+                class='w-full px-4 py-3 mt-3 align-top xl:w-32 xl:mt-0'
+                @click='router.push("/login")'
               >
-                Sign in
+                Đăng nhập
               </Button>
             </div>
           </div>
@@ -142,4 +135,5 @@ import Button from "../base-components/Button";
       </div>
     </div>
   </div>
+  <notification-toastify />
 </template>

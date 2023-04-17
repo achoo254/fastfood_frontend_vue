@@ -3,6 +3,7 @@ import DarkModeSwitcher from "../components/DarkModeSwitcher";
 import MainColorSwitcher from "../components/MainColorSwitcher";
 import errorIllustration from "../assets/images/error-illustration.svg";
 import Button from "../base-components/Button";
+import router from '../router';
 </script>
 
 <template>
@@ -29,7 +30,7 @@ import Button from "../base-components/Button";
           <div class="mt-3 text-lg intro-x">
             You may have mistyped the address or the page may have moved.
           </div>
-          <Button
+          <Button @click='router.push("/")'
             class="px-4 py-3 mt-10 text-white border-white intro-x dark:border-darkmode-400 dark:text-slate-200"
           >
             Back to Home

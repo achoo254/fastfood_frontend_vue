@@ -1,31 +1,48 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import path from "path";
+import { ConfigEnv, UserConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import path from 'path';
+import { loadEnv } from 'vite';
+import { wrapperEnv } from './src/utils/ReadFileEnv';
+export default ({ mode }: ConfigEnv): UserConfig => {
+  const root = process.cwd();
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  build: {
-    commonjsOptions: {
-      include: ["tailwind.config.js", "node_modules/**"],
+  const env = loadEnv(mode, root);
+
+  // The boolean type read by loadEnv is a string. This function can be converted to boolean type
+  const viteEnv = wrapperEnv(env);
+
+  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_DROP_CONSOLE } = viteEnv;
+  return {
+    base: VITE_PUBLIC_PATH,
+    root,
+    server: {
+      https: false,
+      // Listening on all local IPs
+      host: true,
+      port: VITE_PORT,
+      //disable warning socket
+      strictPort: true,
+      hmr: { clientPort: VITE_PORT },
     },
-  },
-  optimizeDeps: {
-    include: ["tailwind-config"],
-  },
-  server: {
-    https: false,
-    // Listening on all local IPs
-    host: true,
-    port: 8017,
-    //disable warning socket
-    strictPort: true,
-    hmr: { clientPort: 8017 },
-  },
-  plugins: [vue()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      "tailwind-config": path.resolve(__dirname, "./tailwind.config.js"),
+    esbuild: {
+      pure: VITE_DROP_CONSOLE ? ['console.log', 'debugger'] : [],
     },
-  },
-})
+    build: {
+      commonjsOptions: {
+        include: ['tailwind.config.js', 'node_modules/**'],
+      },
+    },
+    optimizeDeps: {
+      include: ['tailwind-config'],
+    },
+    plugins: [
+      vue(),
+    ],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+        'tailwind-config': path.resolve(__dirname, './tailwind.config.js'),
+      },
+    },
+  };
+};

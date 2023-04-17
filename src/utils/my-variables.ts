@@ -1,1 +1,4 @@
-export const backendServer = 'http://localhost:8088';
+const backendServer = import.meta.env.VITE_SERVER_URL;
+export const env = {
+  backendServer: backendServer,
+};

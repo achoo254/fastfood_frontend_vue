@@ -26,6 +26,18 @@ export const AccountStore = defineStore('accountStore', () => {
     }
   }
 
+  async function actionRegister(data: IAccount) {
+    //init request
+    const request = { username: data.username, password: data.password, fullname: data.fullname, role: data.role } as IAccount;
+    //call request
+    const response = await AccountService.registerRequest(request);
+    if(response.data){
+      const responseData = response.data as IDataResponse;
+      account.value = responseData.data as IAccount;
+      localStorage.setItem('access_token', account.value.token);
+    }
+  }
+
   async function actionGetAccount() {
     if (myStore.token) {
       try {
@@ -51,5 +63,6 @@ export const AccountStore = defineStore('accountStore', () => {
     account,
     actionLogin,
     actionGetAccount,
+    actionRegister,
   }
 });

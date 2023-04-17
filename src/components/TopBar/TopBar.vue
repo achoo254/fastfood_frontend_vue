@@ -10,6 +10,7 @@
   import router from '../../router';
   import NotificationToastify from '../../base-components/Custom/NotificationCustom/Main.vue';
   import { MyStore } from '../../stores/my-store';
+  import { EnumRole } from '../../models/enum/EnumRole';
 
   const accountStore = AccountStore();
   const myStore = MyStore();
@@ -57,6 +58,10 @@
               {{ account.role }}
             </div>
           </Menu.Header>
+          <Menu.Divider class="bg-white/[0.08]" v-if='account.role === EnumRole.QUAN_LY' />
+          <Menu.Item class="hover:bg-white/5" v-if='account.role === EnumRole.QUAN_LY' @click='router.push("/admin")'>
+            <Lucide icon="User" class="w-4 h-4 mr-2" /> Quản Lý
+          </Menu.Item>
           <Menu.Divider class="bg-white/[0.08]" />
           <Menu.Item class="hover:bg-white/5" @click='actionLogout'>
             <Lucide icon="ToggleRight" class="w-4 h-4 mr-2" />
