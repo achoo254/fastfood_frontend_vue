@@ -12,6 +12,9 @@ import { MyStore } from '../stores/my-store';
 import { handleExceptionError } from '../utils/my-function';
 import { EnumRole } from '../models/enum/EnumRole';
 import TopMenu from '../layouts/TopMenu/TopMenu.vue';
+import CategorySave from '../pages/admin/CategorySave.vue';
+import AccountList from '../pages/admin/AccountList.vue';
+import AccountSave from '../pages/admin/AccountSave.vue';
 
 const routes = [
   {
@@ -48,9 +51,29 @@ const routes = [
         component: CategoryList,
       },
       {
-        path: "",
+        path: "save-category",
+        name: "top-menu-create-category",
+        component: CategorySave,
+      },
+      {
+        path: "save-category/:category_id",
+        name: "top-menu-edit-category",
+        component: CategorySave,
+      },
+      {
+        path: "account-list",
         name: "top-menu-account-list",
-        component: CategoryList,
+        component: AccountList,
+      },
+      {
+        path: "save-account",
+        name: "top-menu-create-account",
+        component: AccountSave,
+      },
+      {
+        path: "save-account/:account_id",
+        name: "top-menu-edit-account",
+        component: AccountSave,
       },
     ]
   },

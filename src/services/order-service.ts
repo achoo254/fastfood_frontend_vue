@@ -6,7 +6,7 @@ class OrderService {
     return apiClient(token).post('/order/create', data);
   }
   updateOrderRequest(data: IOrder, token: string): Promise<any> {
-    return apiClient(token).post('/order/' + data.id, data);
+    return apiClient(token).put('/order/' + data.id, data);
   }
   getOrdersRequest(token: string): Promise<any> {
     return apiClient(token).get('/order');

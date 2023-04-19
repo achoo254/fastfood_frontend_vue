@@ -211,12 +211,12 @@
     <div class="col-span-12 intro-y lg:col-span-8">
       <div class="grid grid-cols-12 gap-5 mt-5">
         <div
-          class="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in"
+          class="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in" :class='{"bg-primary": cate.id === categorySelected}'
           v-for="cate in categories"
           :key="cate.id"
           @click="categorySelected = cate.id">
-          <div class="text-base font-medium">{{ cate.name }}</div>
-          <div class="text-slate-500">{{ cate.products ? cate.products.length : 0 }} sản phẩm</div>
+          <div class="text-base font-medium" :class='{"text-white": cate.id === categorySelected}'>{{ cate.name }}</div>
+          <div class="text-slate-500" :class='{"text-white text-opacity-80 dark:text-slate-500": cate.id === categorySelected}'>{{ cate.products ? cate.products.length : 0 }} sản phẩm</div>
         </div>
       </div>
       <div class="grid grid-cols-12 gap-5 pt-5 mt-5 border-t">

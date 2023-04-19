@@ -9,6 +9,8 @@ import { handleExceptionError } from '../utils/my-function';
 export const AccountStore = defineStore('accountStore', () => {
   const myStore = MyStore();
   const account = ref<IAccount>({ id: '', username: '', password: '', role: EnumRole.NHAN_VIEN, fullname: '', token: ''});
+  const accountCrud = ref<IAccount>({id: ''} as IAccount);
+  const accounts = ref<IAccount[]>([]);
   async function actionLogin(data: IAccount) {
     try{
       //init request
@@ -59,10 +61,56 @@ export const AccountStore = defineStore('accountStore', () => {
     }
   }
 
+  async function actionGetAccountCrud(account_id: string) {
+    //call request
+    const response = await AccountService.getAccountCrudRequest(myStore.token, account_id);
+    if(response.data){
+      const responseData = response.data as IDataResponse;
+      accountCrud.value = responseData.data as IAccount;
+    }
+  }
+
+  async function actionGetAccounts() {
+    //call request
+    const response = await AccountService.getAccountsRequest(myStore.token);
+    if(response.data){
+      const responseData = response.data as IDataResponse;
+      accounts.value = responseData.data as IAccount[];
+    }
+  }
+
+  async function actionCreateAccount(data: IAccount) {
+    if(myStore.token){
+      //call request
+      await AccountService.createAccountRequest(myStore.token, data);
+    }
+  }
+
+  async function actionUpdateAccount(data: IAccount) {
+    if(myStore.token){
+      //call request
+      await AccountService.updateAccountRequest(myStore.token, data);
+    }
+  }
+
+  async function actionDeleteAccount(data: IAccount) {
+    if(myStore.token){
+      //call request
+      await AccountService.deleteAccountRequest(myStore.token, data);
+    }
+  }
+
   return{
     account,
+    accounts,
+    accountCrud,
     actionLogin,
     actionGetAccount,
     actionRegister,
+    actionGetAccounts,
+    actionCreateAccount,
+    actionUpdateAccount,
+    actionDeleteAccount,
+    actionGetAccountCrud,
   }
 });

@@ -10,6 +10,8 @@
   import { ICategory } from '../../models/interface/ICategory';
   import router from '../../router';
   import { showToastMessage, tryCallRequest } from '../../utils/my-function';
+  import { AccountStore } from '../../stores/account-store';
+  import { IAccount } from '../../models/interface/IAccount';
 
   const deleteConfirmationModal = ref(false);
   const setDeleteConfirmationModal = (value: boolean) => {
@@ -18,41 +20,41 @@
   const deleteButtonRef = ref(null);
   //dattqh
   const find = ref('');
-  const categoryStore = CategoryStore();
-  const categories = computed(() => {
-    const data = categoryStore.categories ? (categoryStore.categories as ICategory[]) : [];
-    return data.filter(({ name }) => [name].some((val) => val.toLowerCase().includes(find.value)));
+  const accountStore = AccountStore();
+  const accounts = computed(() => {
+    const data = accountStore.accounts ? (accountStore.accounts as IAccount[]) : [];
+    return data.filter(({ username }) => [username].some((val) => val.toLowerCase().includes(find.value)));
   });
-  const categorySelected = ref<ICategory>({id: ''} as ICategory);
+  const accountSelected = ref<IAccount>({id: ''} as IAccount);
 
-  async function actionDeleteCategory() {
+  async function actionDeleteAccount() {
     await tryCallRequest(async () => {
-      await categoryStore.actionDeleteCategory(categorySelected.value);
+      await accountStore.actionDeleteAccount(accountSelected.value);
       //close modal
       setDeleteConfirmationModal(false);
       //alert success
       showToastMessage();
       //reset data list
-      await categoryStore.actionGetCategories();
+      await accountStore.actionGetAccounts();
     });
   }
 
   onMounted(async () => {
-    await categoryStore.actionGetCategories();
+    await accountStore.actionGetAccounts();
   })
 </script>
 
 <template>
-  <h2 class='mt-10 text-lg font-medium intro-y'>Danh Sách Danh Mục</h2>
+  <h2 class='mt-10 text-lg font-medium intro-y'>Danh Sách Tài Khoản</h2>
   <div class='grid grid-cols-12 gap-6 mt-5'>
     <div
       class='flex flex-wrap items-center col-span-12 mt-2 intro-y sm:flex-nowrap'
     >
-      <Button variant='primary' class='mr-2 shadow-md' @click='router.push("/admin/save-category")'>
-        Thêm mới danh mục
+      <Button variant='primary' class='mr-2 shadow-md' @click='router.push("/admin/save-account")'>
+        Thêm mới tài khoản
       </Button>
       <div class='hidden mx-auto md:block text-slate-500'>
-        Tổng cộng {{ categories.length }} danh mục
+        Tổng cộng {{ accounts.length }} tài khoản
       </div>
       <div class='w-full mt-3 sm:w-auto sm:mt-0 sm:ml-auto md:ml-0'>
         <div class='relative w-56 text-slate-500'>
@@ -74,9 +76,9 @@
       <Table class='border-spacing-y-[10px] border-separate -mt-2'>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th class='border-b-0 whitespace-nowrap'> ẢNH MÓN ĂN</Table.Th>
+            <Table.Th class='border-b-0 whitespace-nowrap'> TÀI KHOẢN</Table.Th>
             <Table.Th class='border-b-0 whitespace-nowrap'>
-              TÊN DANH MỤC
+              QUYỀN
             </Table.Th>
             <Table.Th class='text-center border-b-0 whitespace-nowrap'>
               HÀNH ĐỘNG
@@ -85,58 +87,28 @@
         </Table.Thead>
         <Table.Tbody>
           <Table.Tr
-            v-for='item in categories'
+            v-for='item in accounts'
             :key='item.id'
             class='intro-x'
           >
             <Table.Td
-              class='first:rounded-l-md last:rounded-r-md w-40 bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]'
+              class='first:rounded-l-md last:rounded-r-md bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]'
             >
-              <div class='flex' v-if='item.products && item.products.length > 0'>
-                <div class='w-10 h-10 image-fit zoom-in'>
-                  <Tippy
-                    as='img'
-                    :alt='item.products[0].name'
-                    class='rounded-full shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]'
-                    :src='item.products[0].image'
-                    :content='item.products[0].name'
-                  />
-                </div>
-                <div class='w-10 h-10 -ml-5 image-fit zoom-in' v-if='item.products && item.products.length > 1'>
-                  <Tippy
-                    as='img'
-                    :alt='item.products[1].name'
-                    class='rounded-full shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]'
-                    :src='item.products[1].image'
-                    :content='item.products[1].name'
-                  />
-                </div>
-                <div class='w-10 h-10 -ml-5 image-fit zoom-in' v-if='item.products && item.products.length > 2'>
-                  <Tippy
-                    as='img'
-                    :alt='item.products[2].name'
-                    class='rounded-full shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]'
-                    :src='item.products[2].image'
-                    :content='item.products[2].name'
-                  />
-                </div>
+              {{ item.username }}
+              <div class='text-slate-500 text-xs whitespace-nowrap mt-0.5'>
+                Họ tên: {{ item.fullname ? item.fullname : 'Chưa có' }}
               </div>
             </Table.Td>
             <Table.Td
               class='first:rounded-l-md last:rounded-r-md bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]'
             >
-              <a href='' class='font-medium whitespace-nowrap'>
-                {{ item.name }}
-              </a>
-              <div class='text-slate-500 text-xs whitespace-nowrap mt-0.5'>
-                Các món ăn: {{ item.products && item.products.length > 0 ? item.products.map(value => value.name) : 'Chưa có' }}
-              </div>
+              {{ item.role }}
             </Table.Td>
             <Table.Td
               class='first:rounded-l-md last:rounded-r-md w-56 bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] py-0 relative before:block before:w-px before:h-8 before:bg-slate-200 before:absolute before:left-0 before:inset-y-0 before:my-auto before:dark:bg-darkmode-400'
             >
               <div class='flex items-center justify-center'>
-                <a class='flex items-center mr-3' href='javascript:' @click='router.push("/admin/save-category/" + item.id)'>
+                <a class='flex items-center mr-3' href='javascript:' @click='router.push("/admin/save-account/" + item.id)'>
                   <Lucide icon='CheckSquare' class='w-4 h-4 mr-1' />
                   Sửa
                 </a>
@@ -147,7 +119,7 @@
                     (event) => {
                       event.preventDefault();
                       setDeleteConfirmationModal(true);
-                      categorySelected = item;
+                      accountSelected = item;
                     }
                   '
                 >
@@ -199,7 +171,7 @@
           type='button'
           class='w-24'
           ref='deleteButtonRef'
-          @click='actionDeleteCategory'
+          @click='actionDeleteAccount'
         >
           Xóa
         </Button>
