@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang='ts'>
   import { computed, onMounted, reactive, ref, watch } from 'vue';
   import Button from '../base-components/Button';
   import { FormInput, FormLabel, FormTextarea } from '../base-components/Form';
@@ -81,7 +81,7 @@
       preNewOrder.value = true;
       //init request
       const request = {
-        account: {username: account.value.username, fullname: account.value.fullname} as IAccount,
+        account: { username: account.value.username, fullname: account.value.fullname } as IAccount,
         table: formDataOrder.table,
         count_person: formDataOrder.count_person,
         status: EnumOrder.DANG_DAT,
@@ -111,13 +111,24 @@
   function actionAddProductToOrder() {
     if (!preNewOrder.value) {
       showToastMessage('Vui lòng tạo đơn mới trước khi thêm món', true);
-    } else {
+    }
+    else if(formDataProduct.countProduct <= 0){
+      showToastMessage('Số lượng sản phẩm phải lớn hơn 0', true);
+    }
+    else {
       //neu khong phai updated ticket thi tao moi
       if (!updatedTicket.value) {
         //set count product
         productSelected.value.count = formDataProduct.countProduct;
         //create object product
-        const newProduct = productSelected.value;
+        const newProduct = {
+          name: productSelected.value.name,
+          id_render: productSelected.value.id_render,
+          image: productSelected.value.image,
+          count: productSelected.value.count,
+          price: productSelected.value.price,
+          note: productSelected.value.note,
+        } as IProduct;
         //add object to order creating
         orderCreating.value.products.push(newProduct);
       } else {
@@ -190,54 +201,58 @@
 </script>
 
 <template>
-  <div class="flex flex-col items-center mt-8 intro-y sm:flex-row">
-    <h2 class="mr-auto text-lg font-medium">Thực Đơn</h2>
-    <div class="flex w-full mt-4 sm:w-auto sm:mt-0">
+  <div class='flex flex-col items-center mt-8 intro-y sm:flex-row'>
+    <h2 class='mr-auto text-lg font-medium'>Thực Đơn</h2>
+    <div class='flex w-full mt-4 sm:w-auto sm:mt-0'>
       <Button
-        as="a"
-        href="#"
-        variant="primary"
-        @click="(event: MouseEvent) => {
+        as='a'
+        href='#'
+        variant='primary'
+        @click='(event: MouseEvent) => {
               event.preventDefault();
               setNewOrderModal(true);
-            }"
-        class="mr-2 shadow-md">
+            }'
+        class='mr-2 shadow-md'>
         Đặt hàng mới
       </Button>
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-5 mt-5 intro-y">
+  <div class='grid grid-cols-12 gap-5 mt-5 intro-y'>
     <!-- BEGIN: Item List -->
-    <div class="col-span-12 intro-y lg:col-span-8">
-      <div class="grid grid-cols-12 gap-5 mt-5">
+    <div class='col-span-12 intro-y lg:col-span-8'>
+      <div class='grid grid-cols-12 gap-5 mt-5'>
         <div
-          class="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in" :class='{"bg-primary": cate.id === categorySelected}'
-          v-for="cate in categories"
-          :key="cate.id"
-          @click="categorySelected = cate.id">
-          <div class="text-base font-medium" :class='{"text-white": cate.id === categorySelected}'>{{ cate.name }}</div>
-          <div class="text-slate-500" :class='{"text-white text-opacity-80 dark:text-slate-500": cate.id === categorySelected}'>{{ cate.products ? cate.products.length : 0 }} sản phẩm</div>
+          class='col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in'
+          :class='{"bg-primary": cate.id === categorySelected}'
+          v-for='cate in categories'
+          :key='cate.id'
+          @click='categorySelected = cate.id'>
+          <div class='text-base font-medium' :class='{"text-white": cate.id === categorySelected}'>{{ cate.name }}</div>
+          <div class='text-slate-500'
+               :class='{"text-white text-opacity-80 dark:text-slate-500": cate.id === categorySelected}'>
+            {{ cate.products ? cate.products.length : 0 }} sản phẩm
+          </div>
         </div>
       </div>
-      <div class="grid grid-cols-12 gap-5 pt-5 mt-5 border-t">
+      <div class='grid grid-cols-12 gap-5 pt-5 mt-5 border-t'>
         <a
-          v-for="(product, index) in products"
-          :key="index"
-          href="javascript:"
-          @click="
+          v-for='(product, index) in products'
+          :key='index'
+          href='javascript:'
+          @click='
             (event) => {
               event.preventDefault();
               getProductSelected(product, false);
             }
-          "
-          class="block col-span-12 intro-y sm:col-span-4 2xl:col-span-3">
-          <div class="relative p-3 rounded-md box zoom-in">
-            <div class="flex-none relative block before:block before:w-full before:pt-[100%]">
-              <div class="absolute top-0 left-0 w-full h-full image-fit">
-                <img alt="Midone Tailwind HTML Admin Template" class="rounded-md" :src="product.image" />
+          '
+          class='block col-span-12 intro-y sm:col-span-4 2xl:col-span-3'>
+          <div class='relative p-3 rounded-md box zoom-in'>
+            <div class='flex-none relative block before:block before:w-full before:pt-[100%]'>
+              <div class='absolute top-0 left-0 w-full h-full image-fit'>
+                <img alt='Midone Tailwind HTML Admin Template' class='rounded-md' :src='product.image' />
               </div>
             </div>
-            <div class="block mt-3 font-medium text-center truncate">
+            <div class='block mt-3 font-medium text-center truncate'>
               {{ product.name }}
             </div>
           </div>
@@ -246,91 +261,91 @@
     </div>
     <!-- END: Item List -->
     <!-- BEGIN: PRODUCT ITEM -->
-    <Tab.Group class="col-span-12 lg:col-span-4" v-if="preNewOrder">
-      <div class="pr-1 intro-y">
-        <div class="p-2 box">
-          <Tab.List variant="pills">
+    <Tab.Group class='col-span-12 lg:col-span-4' v-if='preNewOrder'>
+      <div class='pr-1 intro-y'>
+        <div class='p-2 box'>
+          <Tab.List variant='pills'>
             <Tab>
-              <Tab.Button as="button" class="w-full py-2"> Ticket</Tab.Button>
+              <Tab.Button as='button' class='w-full py-2'> Ticket</Tab.Button>
             </Tab>
             <Tab>
-              <Tab.Button as="button" class="w-full py-2"> Thông tin đơn</Tab.Button>
+              <Tab.Button as='button' class='w-full py-2'> Thông tin đơn</Tab.Button>
             </Tab>
           </Tab.List>
         </div>
       </div>
       <Tab.Panels>
         <Tab.Panel>
-          <div class="p-2 mt-5 box" v-if="orderCreating.products && orderCreating.products.length > 0">
+          <div class='p-2 mt-5 box' v-if='orderCreating.products && orderCreating.products.length > 0'>
             <a
-              v-for="(product, index) in orderCreating.products"
-              href="javascript:"
-              :key="index"
-              @click="(event: MouseEvent) => {
+              v-for='(product) in orderCreating.products'
+              href='javascript:'
+              :key='product.id_render'
+              @click='(event: MouseEvent) => {
                       event.preventDefault();
                       getProductSelected(product, true);
-                    }"
-              class="flex items-center p-3 transition duration-300 ease-in-out bg-white rounded-md cursor-pointer dark:bg-darkmode-600 hover:bg-slate-100 dark:hover:bg-darkmode-400">
-              <div class="max-w-[50%] truncate mr-1">
+                    }'
+              class='flex items-center p-3 transition duration-300 ease-in-out bg-white rounded-md cursor-pointer dark:bg-darkmode-600 hover:bg-slate-100 dark:hover:bg-darkmode-400'>
+              <div class='max-w-[50%] truncate mr-1'>
                 {{ product.name }}
               </div>
-              <div class="text-slate-500">x {{ product.count }}</div>
-              <Lucide icon="Edit" class="w-4 h-4 ml-2 text-slate-500" />
-              <div class="ml-auto font-medium">{{ formatNumber(product.price) }} đồng</div>
+              <div class='text-slate-500'>x {{ product.count }}</div>
+              <Lucide icon='Edit' class='w-4 h-4 ml-2 text-slate-500' />
+              <div class='ml-auto font-medium'>{{ formatNumber(product.price) }} đồng</div>
             </a>
           </div>
-          <div class="p-5 mt-5 box" v-if="orderCreating.final_amount > 0">
-            <div class="flex">
-              <div class="mr-auto">Tạm tính</div>
-              <div class="font-medium">{{ formatNumber(orderCreating.total_amount) }} đồng</div>
+          <div class='p-5 mt-5 box' v-if='orderCreating.final_amount > 0'>
+            <div class='flex'>
+              <div class='mr-auto'>Tạm tính</div>
+              <div class='font-medium'>{{ formatNumber(orderCreating.total_amount) }} đồng</div>
             </div>
-            <div class="flex mt-4">
-              <div class="mr-auto">Thuế VAT</div>
-              <div class="font-medium">10%</div>
+            <div class='flex mt-4'>
+              <div class='mr-auto'>Thuế VAT</div>
+              <div class='font-medium'>10%</div>
             </div>
-            <div class="flex pt-4 mt-4 border-t border-slate-200/60 dark:border-darkmode-400">
-              <div class="mr-auto text-base font-medium">Tổng cộng</div>
-              <div class="text-base font-medium">{{ formatNumber(orderCreating.final_amount) }} đồng</div>
+            <div class='flex pt-4 mt-4 border-t border-slate-200/60 dark:border-darkmode-400'>
+              <div class='mr-auto text-base font-medium'>Tổng cộng</div>
+              <div class='text-base font-medium'>{{ formatNumber(orderCreating.final_amount) }} đồng</div>
             </div>
           </div>
-          <div class="flex mt-5">
+          <div class='flex mt-5'>
             <Button
-              variant="danger"
-              class="w-32 border-slate-300 dark:border-darkmode-400"
-              @click="setDeleteOrderModal(true)">
+              variant='danger'
+              class='w-32 border-slate-300 dark:border-darkmode-400'
+              @click='setDeleteOrderModal(true)'>
               Hủy đơn hàng
             </Button>
             <Button
               v-if='orderCreating.final_amount > 0'
-              variant="primary"
-              class="w-32 ml-auto shadow-md"
-              @click="actionCancelOrAcceptOrder(false)">
+              variant='primary'
+              class='w-32 ml-auto shadow-md'
+              @click='actionCancelOrAcceptOrder(false)'>
               Thanh toán
             </Button>
           </div>
         </Tab.Panel>
         <Tab.Panel>
-          <div class="p-5 mt-5 box">
-            <div class="flex items-center pb-5 border-b border-slate-200 dark:border-darkmode-400">
+          <div class='p-5 mt-5 box'>
+            <div class='flex items-center pb-5 border-b border-slate-200 dark:border-darkmode-400'>
               <div>
-                <div class="text-slate-500">Thời gian tạo đơn</div>
-                <div class="mt-1">{{ formatDate(orderCreating.created, 'DD-MM-YYYY hh:mm:ss A') }}</div>
+                <div class='text-slate-500'>Thời gian tạo đơn</div>
+                <div class='mt-1'>{{ formatDate(orderCreating.created, 'DD-MM-YYYY hh:mm:ss A') }}</div>
               </div>
-              <Lucide icon="Clock" class="w-4 h-4 ml-auto text-slate-500" />
+              <Lucide icon='Clock' class='w-4 h-4 ml-auto text-slate-500' />
             </div>
-            <div class="flex items-center py-5 border-b border-slate-200 dark:border-darkmode-400">
+            <div class='flex items-center py-5 border-b border-slate-200 dark:border-darkmode-400'>
               <div>
-                <div class="text-slate-500">Số lượng khách</div>
-                <div class="mt-1">{{ orderCreating.count_person }}</div>
+                <div class='text-slate-500'>Số lượng khách</div>
+                <div class='mt-1'>{{ orderCreating.count_person }}</div>
               </div>
-              <Lucide icon="Users" class="w-4 h-4 ml-auto text-slate-500" />
+              <Lucide icon='Users' class='w-4 h-4 ml-auto text-slate-500' />
             </div>
-            <div class="flex items-center pt-5">
+            <div class='flex items-center pt-5'>
               <div>
-                <div class="text-slate-500">Số bàn</div>
-                <div class="mt-1">{{ orderCreating.table }}</div>
+                <div class='text-slate-500'>Số bàn</div>
+                <div class='mt-1'>{{ orderCreating.table }}</div>
               </div>
-              <Lucide icon="Mic" class="w-4 h-4 ml-auto text-slate-500" />
+              <Lucide icon='Mic' class='w-4 h-4 ml-auto text-slate-500' />
             </div>
           </div>
         </Tab.Panel>
@@ -340,54 +355,54 @@
   </div>
   <!-- BEGIN: New Order Modal -->
   <Dialog
-    :open="newOrderModal"
-    @close="
+    :open='newOrderModal'
+    @close='
       () => {
         setNewOrderModal(false);
       }
-    "
-    :initialFocus="createTicketRef">
+    '
+    :initialFocus='createTicketRef'>
     <Dialog.Panel>
       <Dialog.Title>
-        <h2 class="mr-auto text-base font-medium">Đơn hàng mới</h2>
+        <h2 class='mr-auto text-base font-medium'>Đơn hàng mới</h2>
       </Dialog.Title>
-      <Dialog.Description class="grid grid-cols-12 gap-4 gap-y-3">
-        <div class="col-span-12">
-          <FormLabel htmlFor="pos-form-2">Số bàn</FormLabel>
-          <div class="mt-2">
+      <Dialog.Description class='grid grid-cols-12 gap-4 gap-y-3'>
+        <div class='col-span-12'>
+          <FormLabel htmlFor='pos-form-2'>Số bàn</FormLabel>
+          <div class='mt-2'>
             <TomSelect
-              v-model="formDataOrder.table"
+              v-model='formDataOrder.table'
               :options="{
                 placeholder: 'Chọn số bàn khách ngồi',
               }"
-              class="w-full">
-              <option :value="table[0]" v-for="table in tableData" :key="table[0]">{{ table[1] }}</option>
+              class='w-full'>
+              <option :value='table[0]' v-for='table in tableData' :key='table[0]'>{{ table[1] }}</option>
             </TomSelect>
           </div>
         </div>
-        <div class="col-span-12">
-          <FormLabel htmlFor="pos-form-3">Số lượng khách</FormLabel>
+        <div class='col-span-12'>
+          <FormLabel htmlFor='pos-form-3'>Số lượng khách</FormLabel>
           <FormInput
-            id="pos-form-3"
-            v-model="formDataOrder.count_person"
-            type="number"
-            class="flex-1"
-            placeholder="Số lượng khách" />
+            id='pos-form-3'
+            v-model='formDataOrder.count_person'
+            type='number'
+            class='flex-1'
+            placeholder='Số lượng khách' />
         </div>
       </Dialog.Description>
-      <Dialog.Footer class="text-right">
+      <Dialog.Footer class='text-right'>
         <Button
-          variant="outline-secondary"
-          type="button"
-          @click="
+          variant='outline-secondary'
+          type='button'
+          @click='
             () => {
               setNewOrderModal(false);
             }
-          "
-          class="w-32 mr-1">
+          '
+          class='w-32 mr-1'>
           Bỏ qua
         </Button>
-        <Button variant="primary" type="button" class="w-32" ref="createTicketRef" @click="actionPreNewOrder">
+        <Button variant='primary' type='button' class='w-32' ref='createTicketRef' @click='actionPreNewOrder'>
           Tạo đơn
         </Button>
       </Dialog.Footer>
@@ -396,68 +411,68 @@
   <!-- END: New Order Modal -->
   <!-- BEGIN: Add Item Modal -->
   <Dialog
-    :open="addItemModal"
-    @clsoe="
+    :open='addItemModal'
+    @clsoe='
       () => {
         setAddItemModal(false);
       }
-    "
-    :initialFocus="addItemRef">
+    '
+    :initialFocus='addItemRef'>
     <Dialog.Panel>
       <Dialog.Title>
-        <h2 class="mr-auto text-base font-medium">
+        <h2 class='mr-auto text-base font-medium'>
           {{ productSelected.name }}
         </h2>
       </Dialog.Title>
-      <Dialog.Description class="grid grid-cols-12 gap-4 gap-y-3">
-        <div class="col-span-12">
-          <FormLabel htmlFor="pos-form-4" class="form-label"> Số lượng</FormLabel>
-          <div class="flex flex-1">
+      <Dialog.Description class='grid grid-cols-12 gap-4 gap-y-3'>
+        <div class='col-span-12'>
+          <FormLabel htmlFor='pos-form-4' class='form-label'> Số lượng</FormLabel>
+          <div class='flex flex-1'>
             <Button
-              type="button"
-              @click="
+              type='button'
+              @click='
                 formDataProduct.countProduct =
                   formDataProduct.countProduct - 1 <= 0 ? 0 : formDataProduct.countProduct - 1
-              "
-              class="w-12 mr-1 border-slate-200 bg-slate-100 dark:bg-darkmode-700 dark:border-darkmode-500 text-slate-500">
+              '
+              class='w-12 mr-1 border-slate-200 bg-slate-100 dark:bg-darkmode-700 dark:border-darkmode-500 text-slate-500'>
               -
             </Button>
             <FormInput
-              id="pos-form-4"
-              type="number"
-              class="w-24 text-center"
-              placeholder="số lượng"
-              v-model="formDataProduct.countProduct" />
+              id='pos-form-4'
+              type='number'
+              class='w-24 text-center'
+              placeholder='số lượng'
+              v-model='formDataProduct.countProduct' />
             <Button
-              type="button"
-              @click="formDataProduct.countProduct = formDataProduct.countProduct + 1"
-              class="w-12 ml-1 border-slate-200 bg-slate-100 dark:bg-darkmode-700 dark:border-darkmode-500 text-slate-500">
+              type='button'
+              @click='formDataProduct.countProduct = formDataProduct.countProduct + 1'
+              class='w-12 ml-1 border-slate-200 bg-slate-100 dark:bg-darkmode-700 dark:border-darkmode-500 text-slate-500'>
               +
             </Button>
           </div>
         </div>
-        <div class="col-span-12">
-          <FormLabel htmlFor="pos-form-5">Ghi chú</FormLabel>
+        <div class='col-span-12'>
+          <FormLabel htmlFor='pos-form-5'>Ghi chú</FormLabel>
           <FormTextarea
-            id="pos-form-5"
-            placeholder="Ghi chú món ăn"
-            v-model="productSelected.note"
+            id='pos-form-5'
+            placeholder='Ghi chú món ăn'
+            v-model='productSelected.note'
             readonly></FormTextarea>
         </div>
       </Dialog.Description>
-      <Dialog.Footer class="text-right">
+      <Dialog.Footer class='text-right'>
         <Button
-          variant="outline-secondary"
-          type="button"
-          @click="
+          variant='outline-secondary'
+          type='button'
+          @click='
             () => {
               setAddItemModal(false);
             }
-          "
-          class="w-24 mr-1">
+          '
+          class='w-24 mr-1'>
           Bỏ qua
         </Button>
-        <Button variant="primary" type="button" class="w-24" ref="addItemRef" @click="actionAddProductToOrder">
+        <Button variant='primary' type='button' class='w-24' ref='addItemRef' @click='actionAddProductToOrder'>
           Cập nhật
         </Button>
       </Dialog.Footer>
@@ -466,36 +481,38 @@
   <!-- END: Add Item Modal -->
   <!-- BEGIN: Modal Delete order Content -->
   <Dialog
-    :open="deleteOrderModal"
-    @close="
+    :open='deleteOrderModal'
+    @close='
       () => {
         setDeleteOrderModal(false);
       }
-    "
-    :initialFocus="deleteOrderRef">
+    '
+    :initialFocus='deleteOrderRef'>
     <Dialog.Panel>
-      <div class="p-5 text-center">
-        <Lucide icon="XCircle" class="w-16 h-16 mx-auto mt-3 text-danger" />
-        <div class="mt-5 text-3xl">Bạn chắc chắn không?</div>
-        <div class="mt-2 text-slate-500">
+      <div class='p-5 text-center'>
+        <Lucide icon='XCircle' class='w-16 h-16 mx-auto mt-3 text-danger' />
+        <div class='mt-5 text-3xl'>Bạn chắc chắn không?</div>
+        <div class='mt-2 text-slate-500'>
           Bạn thật sự muốn hủy bỏ đơn hàng này? <br />
           Hành động này không thể khôi phục lại.
         </div>
       </div>
-      <div class="px-5 pb-8 text-center">
+      <div class='px-5 pb-8 text-center'>
         <Button
-          type="button"
-          variant="outline-secondary"
-          @click="
+          type='button'
+          variant='outline-secondary'
+          @click='
             () => {
               setDeleteOrderModal(false);
             }
-          "
-          class="w-24 mr-1">
+          '
+          class='w-24 mr-1'>
           Bỏ qua
         </Button>
-        <Button type="button" variant="danger" class="w-24" ref="{deleteButtonRef}" @click="actionCancelOrAcceptOrder(true)">
-          Hủy đơn</Button
+        <Button type='button' variant='danger' class='w-24' ref='{deleteButtonRef}'
+                @click='actionCancelOrAcceptOrder(true)'>
+          Hủy đơn
+        </Button
         >
       </div>
     </Dialog.Panel>
@@ -503,28 +520,28 @@
   <!-- END: Modal Delete order Content -->
   <!-- BEGIN: Modal Content -->
   <Dialog
-    :open="successOrderModal"
-    @close="
+    :open='successOrderModal'
+    @close='
       () => {
         setSuccessOrderModal(false);
       }
-    ">
+    '>
     <Dialog.Panel>
-      <div class="p-5 text-center">
-        <Lucide icon="CheckCircle" class="w-16 h-16 mx-auto mt-3 text-success" />
-        <div class="mt-5 text-3xl">Đơn hàng đã hoàn thành!</div>
-        <div class="mt-2 text-slate-500">Nhân viên lưu ý hướng dẫn khách hàng nhận thực đơn!</div>
+      <div class='p-5 text-center'>
+        <Lucide icon='CheckCircle' class='w-16 h-16 mx-auto mt-3 text-success' />
+        <div class='mt-5 text-3xl'>Đơn hàng đã hoàn thành!</div>
+        <div class='mt-2 text-slate-500'>Nhân viên lưu ý hướng dẫn khách hàng nhận thực đơn!</div>
       </div>
-      <div class="px-5 pb-8 text-center">
+      <div class='px-5 pb-8 text-center'>
         <Button
-          type="button"
-          variant="primary"
-          @click="
+          type='button'
+          variant='primary'
+          @click='
             () => {
               setSuccessOrderModal(false);
             }
-          "
-          class="w-24">
+          '
+          class='w-24'>
           Đã hiểu
         </Button>
       </div>
